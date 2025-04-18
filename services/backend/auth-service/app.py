@@ -18,4 +18,4 @@ with app.app_context():
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5001, host='0.0.0.0')
