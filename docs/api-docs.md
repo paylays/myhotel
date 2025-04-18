@@ -1,10 +1,6 @@
 # API Documentation MyHotel
 
-deskripsi API Documentation
-
 ## 🔐 Auth Service API Documentation
-
-deskripsi auth api documentation
 
 ### 🌐 Base URL
 
@@ -120,8 +116,6 @@ Tidak perlu body.
 ---
 
 ## 🏨 Hotel Service API Documentation
-
-deskripsi hotel-service documentation
 
 ### 🌐 Base URL
 
