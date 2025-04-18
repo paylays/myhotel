@@ -15,15 +15,21 @@ def get_rooms():
         "status": r.status
     } for r in rooms])
 
-@room_bp.route("/rooms/available", methods=["GET"])
-def get_available_rooms():
-    rooms = Room.query.filter_by(status="available").all()
-    return jsonify([{
-        "id": r.id,
-        "room_number": r.room_number,
-        "type": r.type,
-        "price": float(r.price)
-    } for r in rooms])
+@room_bp.route("/rooms/<int:room_id>", methods=["GET"])
+def get_room_by_id(room_id):
+    room = Room.query.get(room_id)
+    if not room:
+        return jsonify({"error": "Room not found"}), 404
+    
+    room_data = {
+        "id": room.id,
+        "room_number": room.room_number,
+        "type": room.type,
+        "price": float(room.price),
+        "status": room.status
+    }
+
+    return jsonify(room_data), 200
 
 @room_bp.route("/rooms", methods=["POST"])
 def create_room():
