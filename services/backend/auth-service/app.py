@@ -12,9 +12,10 @@ db.init_app(app)
 jwt = JWTManager(app)
 CORS(app)
 
+with app.app_context():
+    db.create_all()
+
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True, port=5001)
