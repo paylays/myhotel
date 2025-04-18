@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: myhotel
+      POSTGRES_USER: payylayss
+      POSTGRES_PASSWORD: payylayss
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  auth-service:
+    build:
+      context: ./services/backend/auth-service
+    ports:
+      - "5001:5001"
+    environment:
+      DB_HOST: db
+      DB_NAME: myhotel
+      DB_USER: payylayss
+      DB_PASSWORD: payylayss
+      JWT_SECRET_KEY: super-secret-key
+    depends_on:
+      - db
+
+  hotel-service:
+    build:
+      context: ./services/backend/hotel-service
+    ports:
+      - "5002:5002"
+    environment:
+      DB_HOST: db
+      DB_NAME: myhotel
+      DB_USER: payylayss
+      DB_PASSWORD: payylayss
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
