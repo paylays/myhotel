@@ -21,11 +21,23 @@ def register():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
-    user = User.query.filter_by(email=data['email']).first()
-    if user and bcrypt.check_password_hash(user.password_hash, data['password']):
-        token = create_access_token(identity={"id": user.id, "role": user.role})
-        return jsonify(access_token=token), 200
-    return jsonify({"msg": "Invalid credentials"}), 401
+    email = data.get('email')
+    password = data.get('password')
+    role = data.get('role')
+    
+    if not email or not password or not role:
+        return jsonify({"msg": "Email, password, and role are required"}), 400
+
+    user = User.query.filter_by(email=email).first()
+
+    if not user or not bcrypt.check_password_hash(user.password_hash, password):
+        return jsonify({"msg": "Invalid credentials"}), 401
+
+    if user.role != role:
+        return jsonify({"msg": f"You are not authorized as {role}"}), 403
+
+    token = create_access_token(identity={"id": user.id, "role": user.role})
+    return jsonify(access_token=token), 200
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
