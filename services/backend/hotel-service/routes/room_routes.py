@@ -63,3 +63,33 @@ def delete_room(room_id):
     db.session.delete(room)
     db.session.commit()
     return jsonify({"message": "Room deleted successfully"})
+
+@room_bp.route("/check-in", methods=["POST"])
+def check_in():
+    data = request.get_json()
+    room_id = data.get("room_id")
+
+    room = Room.query.get(room_id)
+    if not room:
+        return jsonify({"error": "Room not found"}), 404
+    if room.status != "available":
+        return jsonify({"error": "Room is not available for check-in"}), 400
+
+    room.status = "occupied"
+    db.session.commit()
+    return jsonify({"message": f"Check-in successful for room {room.room_number}"}), 200
+
+@room_bp.route("/check-out", methods=["POST"])
+def check_out():
+    data = request.get_json()
+    room_id = data.get("room_id")
+
+    room = Room.query.get(room_id)
+    if not room:
+        return jsonify({"error": "Room not found"}), 404
+    if room.status != "occupied":
+        return jsonify({"error": "Room is not currently occupied"}), 400
+
+    room.status = "available"
+    db.session.commit()
+    return jsonify({"message": f"Check-out successful for room {room.room_number}"}), 200
