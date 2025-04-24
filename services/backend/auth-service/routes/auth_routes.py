@@ -23,21 +23,25 @@ def login():
     data = request.json
     email = data.get('email')
     password = data.get('password')
-    role = data.get('role')
     
-    if not email or not password or not role:
-        return jsonify({"msg": "Email, password, and role are required"}), 400
+    if not email or not password:
+        return jsonify({"msg": "Email and password are required"}), 400
 
     user = User.query.filter_by(email=email).first()
 
     if not user or not bcrypt.check_password_hash(user.password_hash, password):
         return jsonify({"msg": "Invalid credentials"}), 401
 
-    if user.role != role:
-        return jsonify({"msg": f"You are not authorized as {role}"}), 403
-
     token = create_access_token(identity={"id": user.id, "role": user.role})
+
     return jsonify(access_token=token), 200
+
+@auth_bp.route('/dashboard', methods=['GET'])
+@jwt_required()
+def dashboard():
+    current_user = get_jwt_identity()
+    return jsonify(message=f"Welcome to the admin dashboard, User ID: {current_user['id']}")
+
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
