@@ -295,7 +295,117 @@ const Login = () => {
 export default Login;
 
 ```
+### 4. **app-react/Dockerfile**
+![Docker File](images/docker.jpg)
+```py
+# Gunakan image node untuk tahap build
+FROM node:20-alpine AS build
 
+WORKDIR /app
+
+# Salin file proyek ke container
+COPY . .
+
+# Install dependencies
+RUN npm install
+
+# Build aplikasi
+RUN npm run build
+
+# Gunakan Nginx untuk serving file build
+FROM nginx:alpine
+
+# Copy hasil build ke folder Nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Salin konfigurasi default Nginx (opsional)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+Dockerfile ini melakukan multi-stage build. Pertama, ia menggunakan Node.js untuk membangun aplikasi React. Kemudian, ia menggunakan Nginx untuk menyajikan file-file hasil build. Pendekatan ini efisien karena image akhir hanya berisi file-file yang dibutuhkan untuk menjalankan aplikasi, bukan semua dependencies Node.js.
+
+### 5. **docker-compose.yml**
+```py
+docker-compose.yml
+
+
+
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: myhotel
+      POSTGRES_USER: payylayss
+      POSTGRES_PASSWORD: payylayss
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  auth-service:
+    build:
+      context: ./services/backend/auth-service
+    ports:
+      - "5001:5001"
+    environment:
+      DB_HOST: db
+      DB_NAME: myhotel
+      DB_USER: payylayss
+      DB_PASSWORD: payylayss
+      JWT_SECRET_KEY: super-secret-key
+    depends_on:
+      - db
+
+  hotel-service:
+    build:
+      context: ./services/backend/hotel-service
+    ports:
+      - "5002:5002"
+    environment:
+      DB_HOST: db
+      DB_NAME: myhotel
+      DB_USER: payylayss
+      DB_PASSWORD: payylayss
+    depends_on:
+      - db
+
+  booking-service:
+    build:
+      context: ./services/backend/booking-service
+    container_name: booking-service
+    ports:
+      - "5003:5003"
+    environment:
+      DB_USER: payylayss
+      DB_PASSWORD: payylayss
+      DB_HOST: db
+      DB_NAME: myhotel
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./services/frontend/app-react
+    ports:
+      - "5173:80"
+    depends_on:
+      - auth-service
+      - hotel-service
+      - booking-service
+
+volumes:
+  pgdata:
+
+```
+docker-compose.yml ini mengatur orkestrasi dari seluruh aplikasi MyHotel. Ia mendefinisikan bagaimana setiap service dibangun, dikonfigurasi, dan saling terhubung. Docker Compose memudahkan untuk menjalankan dan mengelola aplikasi multi-container.
+
+---
+---
 Kesimpulannya, direktori `/services/frontend` dalam proyek MyHotel bertindak sebagai klien yang mengirimkan permintaan ke berbagai endpoint API yang disediakan oleh layanan-layanan backend. Setiap komponen di dalam  `/services/frontend/src/components/`, seperti `DashboardAdmin.jsx`, `Login.jsx` akan berinteraksi dengan layanan backend. Komponen alur pemesanan akan berkomunikasi dengan `reservation-service`, komponen autentikasi `(Login.jsx, Register.jsx)` akan berinteraksi dengan `auth-service`, dan komponen administratif `(DashboardAdmin.jsx)` akan terhubung dengan berbagai endpoint pada `reservation-service ` dan mungkin `hotel-service`. Seluruh logika untuk tampilan antarmuka pengguna dan orkestrasi interaksi dengan backend ini terpusat dan terorganisir di dalam direktori `/services/frontend/src/` dan subdirektorinya.
 
 
