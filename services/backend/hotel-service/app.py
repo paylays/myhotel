@@ -2,11 +2,13 @@ from flask import Flask
 from config import Config
 from database.db import db
 from routes.room_routes import room_bp
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
+CORS(app)
 
 with app.app_context():
     db.create_all()
