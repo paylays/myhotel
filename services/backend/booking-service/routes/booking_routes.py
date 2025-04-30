@@ -6,9 +6,43 @@ from datetime import datetime
 
 booking_bp = Blueprint("booking_bp", __name__)
 
+AUTH_SERVICE_URL = "http://localhost:5001"
 HOTEL_SERVICE_URL = "http://localhost:5002"
 
-@booking_bp.route("/book", methods=["POST"])
+@booking_bp.route("/booking", methods=["GET"])
+def get_all_bookings():
+    bookings = Booking.query.all()
+    booking_list = []
+
+    for b in bookings:
+        try:
+            user_res = requests.get(f"{AUTH_SERVICE_URL}/api/auth/user/{b.user_id}")
+            user_data = user_res.json() if user_res.status_code == 200 else {}
+        except Exception as e:
+            user_data = {}
+
+        try:
+            room_res = requests.get(f"{HOTEL_SERVICE_URL}/rooms/{b.room_id}")
+            room_data = room_res.json() if room_res.status_code == 200 else {}
+        except Exception as e:
+            room_data = {}
+
+        booking_list.append({
+            "id": b.id,
+            "user_id": b.user_id,
+            "user_name": user_data.get("name", "Unknown"),
+            "room_id": b.room_id,
+            "room_number": room_data.get("room_number", "Unknown"),
+            "check_in_date": b.check_in_date.strftime("%Y-%m-%d"),
+            "check_out_date": b.check_out_date.strftime("%Y-%m-%d"),
+            "status": b.status,
+            "created_at": b.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_at": b.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+        })
+
+    return jsonify(booking_list), 200
+
+@booking_bp.route("/booking", methods=["POST"])
 def book_room():
     data = request.get_json()
 
@@ -81,7 +115,7 @@ def check_availability():
     
     return jsonify({"available": True}), 200
 
-@booking_bp.route("/cancel/<int:id>", methods=["DELETE"])
+@booking_bp.route("/booking/cancel/<int:id>", methods=["DELETE"])
 def cancel_booking(id):
     booking = Booking.query.get(id)
     if not booking:
@@ -98,7 +132,7 @@ def cancel_booking(id):
     db.session.commit()
     return jsonify({"message": "Booking canceled successfully"}), 200
 
-@booking_bp.route("/history/<int:user_id>", methods=["GET"])
+@booking_bp.route("/booking/history/<int:user_id>", methods=["GET"])
 def get_booking_history(user_id):
     bookings = Booking.query.filter_by(user_id=user_id).all()
     if not bookings:
@@ -116,7 +150,7 @@ def get_booking_history(user_id):
     return jsonify(booking_history), 200
 
 # Confirm booking sementara (karena belum ada service untuk admin)
-@booking_bp.route("/confirm/<int:booking_id>", methods=["PUT"])
+@booking_bp.route("/booking/confirm/<int:booking_id>", methods=["PUT"])
 def confirm_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
 
