@@ -18,23 +18,24 @@ def register():
     db.session.commit()
     return jsonify({"msg": "User registered"}), 201
 
-@auth_bp.route('/login', methods=['POST'])
-def login():
+@auth_bp.route('/admin/login', methods=['POST'])
+def admin_login():
     data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    
-    if not email or not password:
-        return jsonify({"msg": "Email and password are required"}), 400
-
-    user = User.query.filter_by(email=email).first()
-
-    if not user or not bcrypt.check_password_hash(user.password_hash, password):
-        return jsonify({"msg": "Invalid credentials"}), 401
-
-    token = create_access_token(identity={"id": user.id, "role": user.role})
-
+    user = User.query.filter_by(email=data['email'], role='admin').first()
+    if not user or not bcrypt.check_password_hash(user.password_hash, data['password']):
+        return jsonify({"msg": "Invalid Username or Password"}), 401
+    token = create_access_token(identity={"id": user.id, "role": "admin"})
     return jsonify(access_token=token), 200
+
+@auth_bp.route('/user/login', methods=['POST'])
+def user_login():
+    data = request.json
+    user = User.query.filter_by(email=data['email'], role='user').first()
+    if not user or not bcrypt.check_password_hash(user.password_hash, data['password']):
+        return jsonify({"msg": "Invalid user credentials"}), 401
+    token = create_access_token(identity={"id": user.id, "role": "user"})
+    return jsonify(access_token=token), 200
+
 
 @auth_bp.route('/dashboard', methods=['GET'])
 @jwt_required()
@@ -48,3 +49,16 @@ def dashboard():
 def profile():
     current_user = get_jwt_identity()
     return jsonify(current_user), 200
+
+@auth_bp.route('/user/<int:id>', methods=['GET'])
+def get_user_by_id(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role
+    }), 200
