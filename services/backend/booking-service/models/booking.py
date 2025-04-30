@@ -11,3 +11,4 @@ class Booking(db.Model):
     check_out_date = db.Column(db.Date, nullable=False)
     status = db.Column(db.Enum('pending', 'confirmed', 'canceled', name='booking_status'), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
