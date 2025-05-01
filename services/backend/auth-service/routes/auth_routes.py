@@ -33,7 +33,7 @@ def user_login():
     user = User.query.filter_by(email=data['email'], role='user').first()
     if not user or not bcrypt.check_password_hash(user.password_hash, data['password']):
         return jsonify({"msg": "Invalid user credentials"}), 401
-    token = create_access_token(identity={"id": user.id, "role": "user"})
+    token = create_access_token(identity=str(user.id))
     return jsonify(access_token=token), 200
 
 
@@ -47,8 +47,19 @@ def dashboard():
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
 def profile():
-    current_user = get_jwt_identity()
-    return jsonify(current_user), 200
+    user_id = get_jwt_identity()  # {'id': 1, 'role': 'user'}
+    user = User.query.get(int(user_id))
+
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role
+    }), 200
+
 
 @auth_bp.route('/user/<int:id>', methods=['GET'])
 def get_user_by_id(id):
