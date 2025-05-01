@@ -7,7 +7,7 @@ import PageContainer from 'src/components/container/PageContainer';
 import Logo from 'src/layouts/full/shared/logo/Logo';
 import AuthLogin from './auth/AuthLogin';
 
-const Login2 = () => {
+const Login = () => {
   
   return (
     <PageContainer title="Login" description="this is Login page">
@@ -56,4 +56,4 @@ const Login2 = () => {
   );
 };
 
-export default Login2;
+export default Login;
