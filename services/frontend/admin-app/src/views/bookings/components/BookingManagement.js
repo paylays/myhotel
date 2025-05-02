@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import {
   Typography, Box,
   Table,
@@ -9,13 +9,12 @@ import {
   TableRow,
   Chip,
   Tooltip,
-  IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button
+  IconButton
 } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
-// import Swal from 'sweetalert2';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import Swal from 'sweetalert2';
 
 import DashboardCard from "../../../components/shared/DashboardCard";
 
@@ -39,6 +38,36 @@ const BookingManagement = ({}) => {
   useEffect(() => {
     fetchBookings();
   }, [location]);;
+
+  const handleStatusChange = async (bookingId, newStatus) => {
+    try {
+      if (newStatus === "confirmed") {
+        await axios.put(`http://localhost:5003/booking/confirm/${bookingId}`);
+        Swal.fire({
+          icon: "success",
+          title: "Booking Confirmed",
+          text: `Booking ID:${bookingId} Name:${booking.user_name} has been confirmed.`,
+        });
+      } else if (newStatus === "canceled") {
+        await axios.delete(`http://localhost:5003/booking/cancel/${bookingId}`);
+        Swal.fire({
+          icon: "success",
+          title: "Booking Canceled",
+          text: `Booking ID ${bookingId} has been canceled.`,
+        });
+      }
+
+      fetchBookings(); // refresh the table
+    } catch (error) {
+      console.error("Failed to update booking status:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Action Failed",
+        text: error.response?.data?.error || "An unexpected error occurred.",
+      });
+    }
+  };
+
 
   
   return (
@@ -66,6 +95,7 @@ const BookingManagement = ({}) => {
               <TableCell><Typography variant="subtitle2" fontWeight={600}>Check-out</Typography></TableCell>
               <TableCell><Typography variant="subtitle2" fontWeight={600}>Status</Typography></TableCell>
               <TableCell><Typography variant="subtitle2" fontWeight={600}>Created At</Typography></TableCell>
+              <TableCell><Typography variant="subtitle2" fontWeight={600}>Actions</Typography></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -99,6 +129,32 @@ const BookingManagement = ({}) => {
                   />
                 </TableCell>
                 <TableCell>{booking.created_at}</TableCell>
+                <TableCell>
+                  <>
+                    <Tooltip title="Confirm Booking">
+                      <span>
+                        <IconButton
+                          onClick={() => handleStatusChange(booking.id, 'confirmed')}
+                          disabled={booking.status !== "pending"}
+                          color="success"
+                        >
+                          <CheckCircleIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                    <Tooltip title="Cancel Booking">
+                      <span>
+                        <IconButton
+                          onClick={() => handleStatusChange(booking.id, 'canceled')}
+                          disabled={booking.status !== "pending"}
+                          color="error"
+                        >
+                          <CancelIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  </>
+                </TableCell>
               </TableRow>
               ))
             )}
