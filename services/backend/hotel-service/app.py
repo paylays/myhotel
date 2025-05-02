@@ -8,7 +8,10 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": [
+    "http://localhost:5173",
+    "http://localhost:5174"
+]}}, supports_credentials=True)
 
 with app.app_context():
     db.create_all()
