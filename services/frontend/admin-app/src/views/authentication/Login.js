@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
-import { Grid, Box, Card, Stack, Typography } from '@mui/material';
+import { Grid, Box, Card, Typography } from '@mui/material';
 
 // components
 import PageContainer from 'src/components/container/PageContainer';
@@ -39,12 +38,14 @@ const Login = () => {
           >
             <Card elevation={9} sx={{ p: 4, zIndex: 1, width: '100%', maxWidth: '500px' }}>
               <Box display="flex" alignItems="center" justifyContent="center">
-                <Logo />
+                <Typography variant="h3">
+                  Dashboard Admin
+                </Typography>
               </Box>
               <AuthLogin
                 subtext={
                   <Typography variant="subtitle1" textAlign="center" color="textSecondary" mb={1}>
-                    Your Social Campaigns
+                    Login with your account
                   </Typography>
                 }
               />
