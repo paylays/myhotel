@@ -1,10 +1,11 @@
 import os
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = (
-        f"postgresql://{os.getenv('DB_USER', 'payylayss')}:"
-        f"{os.getenv('DB_PASSWORD', 'payylayss')}@"
-        f"{os.getenv('DB_HOST', 'localhost')}/"
-        f"{os.getenv('DB_NAME', 'myhotel')}"
-    )
+    # Ambil URL database dari environment variable yang didefinisikan di docker-compose.yml
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/myhotel")
+
+    # Optional: Menonaktifkan warning dari SQLAlchemy
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Secret key untuk JWT dan Flask session
+    SECRET_KEY = os.environ.get("SECRET_KEY", "super-secret-key")
