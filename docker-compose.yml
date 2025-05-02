@@ -9,6 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
 
@@ -19,7 +20,11 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - DATABASE_URL=postgresql://payylayss:payylayss@db:5432/myhotel
+      - DB_USER=payylayss
+      - DB_PASSWORD=payylayss
+      - DB_HOST=db
+      - DB_NAME=myhotel
+      - JWT_SECRET_KEY=super-secret-key
     depends_on:
       - db
     networks:
@@ -32,7 +37,11 @@ services:
     ports:
       - "5002:5002"
     environment:
-      - DATABASE_URL=postgresql://payylayss:payylayss@db:5432/myhotel
+      - DB_USER=payylayss
+      - DB_PASSWORD=payylayss
+      - DB_HOST=db
+      - DB_NAME=myhotel
+      - JWT_SECRET_KEY=super-secret-key
     depends_on:
       - db
     networks:
@@ -45,7 +54,11 @@ services:
     ports:
       - "5003:5003"
     environment:
-      - DATABASE_URL=postgresql://payylayss:payylayss@db:5432/myhotel
+      - DB_USER=payylayss
+      - DB_PASSWORD=payylayss
+      - DB_HOST=db
+      - DB_NAME=myhotel
+      - JWT_SECRET_KEY=super-secret-key
     depends_on:
       - db
     networks:
