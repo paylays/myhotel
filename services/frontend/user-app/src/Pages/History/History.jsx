@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { BsCalendar4 } from "react-icons/bs";
 import { BiUserCircle } from "react-icons/bi";
+import Swal from "sweetalert2";
 
 import BreadCrumb from "../../BreadCrumb/BreadCrumb";
 
@@ -41,6 +42,51 @@ const History = () => {
     fetchHistory();
   }, []);
 
+  const handleCancelBooking = (bookingId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This booking will be cancelled.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#008000", // hijau
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, cancel it!",
+      background: "#c19d68",
+      color: "#fff",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axios.delete(`http://localhost:5003/booking/cancel/${bookingId}`);
+          if (res.status === 200) {
+            setBookings((prev) =>
+              prev.map((b) =>
+                b.id === bookingId ? { ...b, status: "canceled" } : b
+              )
+            );
+            Swal.fire({
+              title: "Cancelled!",
+              text: "Your booking has been cancelled.",
+              icon: "success",
+              background: "#c19d68",
+              color: "#fff",
+              confirmButtonColor: "#008000",
+            });
+          }
+        } catch (err) {
+          console.error("Failed to cancel booking:", err);
+          Swal.fire({
+            title: "Error!",
+            text: "Failed to cancel booking.",
+            icon: "error",
+            background: "#c19d68",
+            color: "#fff",
+            confirmButtonColor: "#d33",
+          });
+        }
+      }
+    });
+  };
+  
 
   return (
     <section>
@@ -92,23 +138,30 @@ const History = () => {
                         </p>
                       </div>
                     </div>
-                    <Link to="#">
-                      <h5 className="text-[22px] 2xl:text-3xl mt-3 leading-6  md:leading-7 2xl:leading-[38px] text-lightBlack dark:text-white font-medium font-Garamond hover:text-khaki dark:hover:text-khaki transition-all duration-300">
-                        Room Number: {booking.room_number}
-                      </h5>
-                    </Link>
-                    <p className="text-gray dark:text-lightGray font-normal font-Lora">
+                    <h5 className="text-[22px] 2xl:text-3xl mt-3 leading-6  md:leading-7 2xl:leading-[38px] text-lightBlack dark:text-white font-medium font-Garamond hover:text-khaki dark:hover:text-khaki transition-all duration-300">
+                      Room Number: {booking.room_number}
+                    </h5>
+                    <p className="text-sm lg:text-base leading-[26px] text-gray dark:text-lightGray font-normal font-Lora pt-3 pb-5 2xl:pb-[27px]">
                       Room Type: {booking.type}
                     </p>
-                    <p className="text-gray dark:text-lightGray font-normal font-Lora">
+                    <p className="text-sm lg:text-base leading-[26px] text-gray dark:text-lightGray font-normal font-Lora pt-3 pb-5 2xl:pb-[27px]">
                       Status: {booking.status}
                     </p>
-                    <p className="text-gray dark:text-lightGray font-normal font-Lora">
+                    <p className="text-sm lg:text-base leading-[26px] text-gray dark:text-lightGray font-normal font-Lora pt-3 pb-5 2xl:pb-[27px]">
                       Check-In: {booking.check_in_date}
                     </p>
-                    <p className="text-gray dark:text-lightGray font-normal font-Lora">
+                    <p className="text-sm lg:text-base leading-[26px] text-gray dark:text-lightGray font-normal font-Lora pt-3 pb-5 2xl:pb-[27px]">
                       Check-Out: {booking.check_out_date}
                     </p>
+                    <Link to={"#"}>
+                      <button 
+                        className="btn-primary mb-2 sm:h-[42px] 2xl:h-[49px]  lg:before:top-[3.2rem] 2xl:before:top-[3.5rem] "
+                        onClick={() => handleCancelBooking(booking.id)}
+                        disabled={booking.status !== "pending"}  
+                      >
+                        CANCEL BOOKING
+                      </button>
+                    </Link>
                   </div>
                 </div>
                 ))

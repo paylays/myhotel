@@ -4,10 +4,9 @@ import { createBrowserRouter } from "react-router-dom";
 import Main from "../Main/Main";
 import Home from "../Pages/Home/Home";
 import History from "../Pages/History/History";
+import Booking from "../Pages/Booking/Booking";
 
 // All InnerPage
-import Room from "../Pages/InnerPage/Room";
-import FindRoom from "../Pages/InnerPage/FindRoom";
 import RoomDetails from "../Pages/InnerPage/RoomDetails";
 import ErrorPage from "../Shared/ErrorPage";
 import Login from "../Pages/Auth/Login";
@@ -25,12 +24,8 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/room",
-        element: <Room />,
-      },
-      {
         path: "/find_room",
-        element: <FindRoom />,
+        element: <Booking />,
       },
       {
         path: "/room_details",
