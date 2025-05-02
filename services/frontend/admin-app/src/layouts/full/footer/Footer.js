@@ -9,7 +9,7 @@ const Footer = () => {
                 © {new Date().getFullYear()} All rights reserved by{" "}
                 <Link to="https://www.adminmart.com">
                     <Typography color='primary.main' component='span'>
-                        AdminMart.com</Typography>
+                        Payylayss</Typography>
                 </Link>{" "}
             </Typography>
         </Box>
