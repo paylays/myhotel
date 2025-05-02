@@ -7,8 +7,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 booking_bp = Blueprint("booking_bp", __name__)
 
-AUTH_SERVICE_URL = "http://localhost:5001"
-HOTEL_SERVICE_URL = "http://localhost:5002"
+AUTH_SERVICE_URL = "http://auth-service:5001"
+HOTEL_SERVICE_URL = "http://hotel-service:5002"
 
 @booking_bp.route("/booking", methods=["GET"])
 def get_all_bookings():
