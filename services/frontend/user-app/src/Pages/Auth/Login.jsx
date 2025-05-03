@@ -21,7 +21,7 @@ export function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5001/api/auth/user/login', {
+      const res = await axios.post(`${import.meta.env.VITE_API_AUTH}/api/auth/user/login`, {
         email,
         password,
       });
@@ -30,7 +30,7 @@ export function Login() {
 
       localStorage.setItem("token", token);
 
-      const profileRes = await axios.get('http://localhost:5001/api/auth/me', {
+      const profileRes = await axios.get(`${import.meta.env.VITE_API_AUTH}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

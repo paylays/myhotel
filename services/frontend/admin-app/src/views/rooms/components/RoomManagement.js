@@ -25,7 +25,7 @@ const RoomManagement = ({}) => {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get('http://localhost:5002/rooms');
+      const res = await axios.get(`${import.meta.env.VITE_API_HOTEL}/rooms`);
       setRooms(res.data);
     } catch (error) {
       console.error('Failed to fetch rooms:', error);
@@ -68,7 +68,7 @@ const RoomManagement = ({}) => {
   
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5002/rooms/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_HOTEL}/rooms/${id}`);
         Swal.fire({
           icon: 'success',
           title: 'Deleted!',

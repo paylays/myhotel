@@ -20,7 +20,7 @@ const RecentBookings = () => {
   const fetchRecentBookings = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5003/booking');
+      const res = await axios.get(`${import.meta.env.VITE_API_BOOKING}/booking`);
       const sorted = res.data
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
         .slice(0, 5);

@@ -36,7 +36,7 @@ const RoomDetails = () => {
   
     try {
       const response = await axios.post(
-        "http://localhost:5003/booking",
+        `${import.meta.env.VITE_API_BOOKING}/booking`,
         {
           room_id: room?.id,
           check_in_date: selectedInDate?.slice(0, 10),

@@ -20,7 +20,7 @@ const History = () => {
 
       try {
         setLoading(true);
-        const userRes = await axios.get("http://localhost:5001/api/auth/me", {
+        const userRes = await axios.get(`${import.meta.env.VITE_API_AUTH}/api/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -29,7 +29,7 @@ const History = () => {
         setUser(userData);
 
         const historyRes = await axios.get(
-          `http://localhost:5003/booking/history/${userData.id}`
+          `${import.meta.env.VITE_API_BOOKING}/booking/history/${userData.id}`
         );
         setBookings(historyRes.data);
       } catch (error) {
@@ -56,7 +56,7 @@ const History = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axios.delete(`http://localhost:5003/booking/cancel/${bookingId}`);
+          const res = await axios.delete(`${import.meta.env.VITE_API_BOOKING}/booking/cancel/${bookingId}`);
           if (res.status === 200) {
             setBookings((prev) =>
               prev.map((b) =>

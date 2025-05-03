@@ -24,7 +24,7 @@ const EditRoom = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await axios.get(`http://localhost:5002/rooms/${id}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_HOTEL}/rooms/${id}`);
         setRoom(res.data);
       } catch (err) {
         console.error('Failed to fetch room', err);
@@ -41,7 +41,7 @@ const EditRoom = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5002/rooms/${id}`, room);
+      await axios.put(`${import.meta.env.VITE_API_HOTEL}/rooms/${id}`, room);
       Swal.fire({
         icon: 'success',
         title: 'Room Updated',

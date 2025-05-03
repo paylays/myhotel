@@ -26,7 +26,7 @@ const BookingManagement = ({}) => {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5003/booking');
+      const res = await axios.get(`${import.meta.env.VITE_API_BOOKING}/booking`);
       setBookings(res.data);
     } catch (error) {
       console.error('Failed to fetch rooms:', error);
@@ -42,14 +42,14 @@ const BookingManagement = ({}) => {
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
       if (newStatus === "confirmed") {
-        await axios.put(`http://localhost:5003/booking/confirm/${bookingId}`);
+        await axios.put(`${import.meta.env.VITE_API_BOOKING}/booking/confirm/${bookingId}`);
         Swal.fire({
           icon: "success",
           title: "Booking Confirmed",
           text: `Booking ID:${bookingId} Name:${booking.user_name} has been confirmed.`,
         });
       } else if (newStatus === "canceled") {
-        await axios.delete(`http://localhost:5003/booking/cancel/${bookingId}`);
+        await axios.delete(`${import.meta.env.VITE_API_BOOKING}/booking/cancel/${bookingId}`);
         Swal.fire({
           icon: "success",
           title: "Booking Canceled",

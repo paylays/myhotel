@@ -21,7 +21,7 @@ const AddRoom = () => {
     e.preventDefault();
 
     try {
-      await axios.post('http://localhost:5002/rooms', roomData);
+      await axios.post(`${import.meta.env.VITE_API_HOTEL}/rooms`, roomData);
       Swal.fire({
         icon: 'success',
         title: 'Room Added!',
