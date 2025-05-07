@@ -24,7 +24,7 @@ def admin_login():
     user = User.query.filter_by(email=data['email'], role='admin').first()
     if not user or not bcrypt.check_password_hash(user.password_hash, data['password']):
         return jsonify({"msg": "Invalid Username or Password"}), 401
-    token = create_access_token(identity={"id": user.id, "role": "admin"})
+    token = create_access_token(identity=str(user.id))
     return jsonify(access_token=token), 200
 
 @auth_bp.route('/user/login', methods=['POST'])
@@ -35,14 +35,6 @@ def user_login():
         return jsonify({"msg": "Invalid user credentials"}), 401
     token = create_access_token(identity=str(user.id))
     return jsonify(access_token=token), 200
-
-
-@auth_bp.route('/dashboard', methods=['GET'])
-@jwt_required()
-def dashboard():
-    current_user = get_jwt_identity()
-    return jsonify(message=f"Welcome to the admin dashboard, User ID: {current_user['id']}")
-
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
@@ -60,16 +52,61 @@ def profile():
         "role": user.role
     }), 200
 
+@auth_bp.route('/users', methods=['GET'])
+@jwt_required()
+def list_users():
+    user_id = get_jwt_identity()
+    current_user = User.query.get(int(user_id))
 
-@auth_bp.route('/user/<int:id>', methods=['GET'])
-def get_user_by_id(id):
+    if current_user is None or current_user.role != 'admin':
+        return jsonify({"msg": "Unauthorized"}), 403
+
+    users = User.query.filter_by(role='user').order_by(User.name.asc()).all()
+    return jsonify([
+        {
+            "id": u.id,
+            "name": u.name,
+            "email": u.email,
+            "role": u.role
+        } for u in users
+    ]), 200
+
+@auth_bp.route('/user/<int:id>', methods=['PUT'])
+@jwt_required()
+def update_user(id):
+    user_id = get_jwt_identity() 
+    current_user = User.query.get(int(user_id))
+
+    if current_user is None or (current_user.role != 'admin' and current_user.id != id):
+        return jsonify({"msg": "Unauthorized"}), 403
+
     user = User.query.get(id)
     if not user:
         return jsonify({"msg": "User not found"}), 404
 
-    return jsonify({
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "role": user.role
-    }), 200
+    data = request.json
+    user.name = data.get('name', user.name)
+    user.email = data.get('email', user.email)
+    if data.get('password'):
+        user.password_hash = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+
+    db.session.commit()
+    return jsonify({"msg": "User updated successfully"}), 200
+
+@auth_bp.route('/user/<int:id>', methods=['DELETE'])
+@jwt_required()
+def delete_user(id):
+    user_id = get_jwt_identity()  
+    current_user = User.query.get(int(user_id))
+
+    if current_user is None or current_user.role != 'admin':
+        return jsonify({"msg": "Unauthorized"}), 403
+
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"msg": "User deleted"}), 200
+
