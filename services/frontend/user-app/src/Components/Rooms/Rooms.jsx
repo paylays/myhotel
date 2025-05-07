@@ -20,7 +20,7 @@ const Rooms = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5003/available-rooms", {
+      const response = await axios.get(`${import.meta.env.VITE_API_BOOKING}/available-rooms`, {
         params: {
           check_in_date: checkIn,
           check_out_date: checkOut,
