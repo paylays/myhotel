@@ -27,7 +27,18 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
         password,
       });
 
-      localStorage.setItem('token', res.data.access_token);
+      const token = res.data.access_token;
+
+      localStorage.setItem("token", token);
+
+      const profileRes = await axios.get(`${import.meta.env.VITE_API_AUTH}/api/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log('Admin profile:', profileRes.data);
+
       Swal.fire({
         icon: 'success',
         title: 'Login Successful!',

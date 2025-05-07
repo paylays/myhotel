@@ -1,16 +1,16 @@
 import React, { lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router';
 
-/* ***Layouts**** */
+// Layouts
 const FullLayout = lazy(() => import('../layouts/full/FullLayout'));
 const BlankLayout = lazy(() => import('../layouts/blank/BlankLayout'));
 
-/* ****Pages***** */
+// Pages
 const Dashboard = lazy(() => import('../views/dashboard/Dashboard'))
 const Error = lazy(() => import('../views/authentication/Error'));
 const Login = lazy(() => import('../views/authentication/Login'));
 
-// Routes New
+// Private Route
 const PrivateRoute = lazy(() => import('../components/PrivateRoute'));
 
 // Room Management
@@ -20,6 +20,9 @@ const EditRoom = lazy(() => import('../views/rooms/components/EditRoom') )
 
 // Booking Management
 const Booking = lazy(() => import('../views/bookings/Booking'))
+
+// Account Management
+const Account = lazy(() => import('../views/accounts/Account'))
 
 const Router = [
   {
@@ -38,6 +41,8 @@ const Router = [
           { path: '/rooms/:id/edit', element: <EditRoom /> },
           
           { path: '/bookings', element: <Booking /> },
+
+          { path: '/accounts', element: <Account /> },
 
           { path: '*', element: <Navigate to="/404" /> },
         ],

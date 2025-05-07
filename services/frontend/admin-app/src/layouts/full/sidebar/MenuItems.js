@@ -2,7 +2,7 @@ import { uniqueId } from 'lodash';
 
 import {
   IconLayoutDashboard,
-  IconBed, IconCalendarCheck
+  IconBed, IconCalendarCheck, IconUser
 } from '@tabler/icons-react';
 
 
@@ -34,7 +34,18 @@ const Menuitems = [
     title: 'Booking Management',
     icon: IconCalendarCheck,
     href: '/bookings',
-  },  
+  },
+  
+  {
+    navlabel: true,
+    subheader: 'Other',
+  },
+  {
+    id: uniqueId(),
+    title: 'Account Management',
+    icon: IconUser,
+    href: '/accounts',
+  },
 ];
 
 export default Menuitems;
